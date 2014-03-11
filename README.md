@@ -1,5 +1,5 @@
 
-# A better require for Ruby
+# A better `require` for Ruby
 
 This is an experimental project to improve how modules are loaded and namespaces
 are handled.
@@ -22,6 +22,12 @@ So the following would load `SomeLibrary` into `MyTopLevelNamespace`.
 module MyTopLevelModule
   better_require "some_library"
 end
+
+constants.include?(:SomeLibrary)
+# => false
+
+MyTopLevelModule.constants.include?(:SomeLibrary)
+# => true
 ```
 
 ## Goals
