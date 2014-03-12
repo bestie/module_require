@@ -23,7 +23,7 @@ module MyTopLevelModule
   better_require "some_library"
 end
 
-constants.include?(:SomeLibrary)
+::Object.constants.include?(:SomeLibrary)
 # => false
 
 MyTopLevelModule.constants.include?(:SomeLibrary)
