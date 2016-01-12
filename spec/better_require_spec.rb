@@ -1,28 +1,27 @@
 require "spec_helper"
 
 Module.class_eval do
-  def better_require(filepath, import_module_name = nil)
-    filepath = filepath[-3..-1] == ".rb" ? filepath : filepath + ".rb"
+  def better_require(filepath, desired_constants = false)
+    filepath = filepath.slice(-3..-1) == ".rb" ? filepath : filepath + ".rb"
     file_contents = File.read(filepath)
 
-    module_eval(file_contents)
+    intermediate_module = Module.new
+    intermediate_module.module_eval(file_contents)
+    transferrable_constants = desired_constants ? desired_constants : intermediate_module.constants
 
-    if import_module_name
-      import_module = const_get(import_module_name)
-      if import_module
-        import_module.constants.each do |const_name|
-          const_set(const_name, import_module.const_get(const_name))
-        end
+    copy_constants(intermediate_module, transferrable_constants)
 
-        remove_const(import_module_name)
-      end
-    end
-
-    self
+    nil
   end
 
   def require(filepath)
     better_require(filepath)
+  end
+
+  def copy_constants(source, list)
+    list.each do |name|
+      const_set(name, source.const_get(name))
+    end
   end
 end
 
@@ -31,10 +30,10 @@ describe Module do
   let(:test_lib_file_path) { "spec/support/library" }
 
   describe "#better_require" do
-    it "returns self" do
+    it "returns nil" do
       expect(
         new_module.better_require(test_lib_file_path)
-      ).to be(new_module)
+      ).to be(nil)
     end
 
     it "loads the library module into the new module" do
@@ -92,11 +91,21 @@ describe Module do
       end
     end
 
-    context "when module name is specified" do
-      it "expands the specified module into the new module" do
-        new_module.better_require(test_lib_file_path, :Library)
+    context "when a specific list of constants is supplied" do
+      let(:test_lib_file_path) { "spec/support/lib_with_two_top_level_modules" }
+      let(:desired_constants) { [:LibWithTwoTopLevelModulesGoodModule] }
+      let(:undesired_constants) { [:LibWithTwoTopLevelModulesBadModule] }
 
-        expect(new_module.constants).to match_array([:LibraryClass, :LIBRARY_CONSTANT])
+      it "imports the specified constants" do
+        new_module.better_require(test_lib_file_path, desired_constants)
+
+        expect(new_module.constants).to include(*desired_constants)
+      end
+
+      it "rejects any further constants" do
+        new_module.better_require(test_lib_file_path, desired_constants)
+
+        expect(new_module.constants).not_to include(*undesired_constants)
       end
     end
   end
