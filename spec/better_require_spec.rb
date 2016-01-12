@@ -61,14 +61,14 @@ describe Module do
       it "does not bork constant lookup within the library" do
         new_module.better_require(test_lib_file_path)
 
-        aupporting_library_constants = new_module
+        supporting_library_constants = new_module
           .const_get("SupportingLibrary::SupportingClass")
 
         expect(
           new_module
             .const_get("Library::LibraryClass")
             .get_constants_from_supporting_library
-        ).to eq(new_module.const_get("SupportingLibrary::SupportingClass"))
+        ).to eq(supporting_library_constants)
       end
     end
 
