@@ -1,26 +1,38 @@
+# A scoped, module based code loading for Ruby
 
-# A better `require` for Ruby
+This is an experimental project to ascertain the utility and practicality of an
+opt-in, scoped code loading mechanism.
 
-This is an experimental project to improve how modules are loaded and namespaces
-are handled.
+`require` evaluates the target Ruby code within the global namespace creating
+new constants or modifying existing ones.
 
-## The problem
+`module_require` aims to provide a mechanism for loading files into modules
+such that imported code is scoped, preventing unintentional pollution of the
+global namespace and allowing the user more control over dependencies.
 
-Managing dependencies is hard and the Bundler team have to make herculean
-efforts to manage them for us. The core problem being that you can't load two
-versions of same gem as they would both try to overwrite eachothers top-level
-module.
+## Features
 
-## The solution
+* Load two versions of the gem
+* Load a gem into an anonymous module such that access to it can be private
+* Whitelist top level constants
 
-Provide a mechanism for loading files into modules such that you have control
-over the population of your own global namespace.
+## Caveats
 
-So the following would load `SomeLibrary` into `MyTopLevelNamespace`.
+Ruby offers no real safety or restrictions so any of these features can of
+course be circumvented as simply as using absolute constant lookup eg
+`::MyModule` or `Object::MyModule`.
+
+## Goals
+
+* Work without VM modifications
+* Compatibility with existing popular libraries
+* Code that is approachable
+
+## Example
 
 ```ruby
 module MyTopLevelModule
-  better_require "some_library"
+  module_require "some_library"
 end
 
 ::Object.constants.include?(:SomeLibrary)
@@ -29,13 +41,3 @@ end
 MyTopLevelModule.constants.include?(:SomeLibrary)
 # => true
 ```
-
-## Goals
-
-* Work without VM modifications
-* Compatibility with existing popular libraries
-* Code that isn't *too* mental
-
-## Future
-
-* Java style imports allowing the user to choose which constants are loaded
