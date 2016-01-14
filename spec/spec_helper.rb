@@ -1,5 +1,4 @@
 require "pry"
-require "awesome_print"
 
 RSpec.configure do |config|
   config.order = :random
