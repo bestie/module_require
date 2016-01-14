@@ -6,7 +6,7 @@ Module.class_eval do
   include ModuleRequire
 end
 
-describe Module do
+RSpec.describe Module do
   let(:new_module)         { Module.new }
   let(:test_lib_file_path) { "spec/support/library" }
 
