@@ -7,8 +7,12 @@ Module.class_eval do
 end
 
 RSpec.describe Module do
+  before(:all) do
+    $LOAD_PATH.push("./spec/support")
+  end
+
   let(:new_module)         { Module.new }
-  let(:test_lib_file_path) { "spec/support/library" }
+  let(:test_lib_file_path) { "library" }
 
   describe "#module_require" do
     it "returns nil" do
@@ -50,7 +54,7 @@ RSpec.describe Module do
     end
 
     context "when the library requires another supporting library" do
-      let(:test_lib_file_path) { "spec/support/library_with_support" }
+      let(:test_lib_file_path) { "library_with_support" }
 
       it "loads both library and supporting library module into the new module" do
         new_module.module_require(test_lib_file_path)
@@ -73,7 +77,7 @@ RSpec.describe Module do
     end
 
     context "when a specific list of constants is supplied" do
-      let(:test_lib_file_path) { "spec/support/lib_with_two_top_level_modules" }
+      let(:test_lib_file_path) { "lib_with_two_top_level_modules" }
       let(:desired_constants) { [:LibWithTwoTopLevelModulesGoodModule] }
       let(:undesired_constants) { [:LibWithTwoTopLevelModulesBadModule] }
 

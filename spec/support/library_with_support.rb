@@ -1,4 +1,4 @@
-require "./spec/support/supporting_library"
+require "supporting_library"
 
 module Library
   LIBRARY_CONSTANT = "Library's Constant"
