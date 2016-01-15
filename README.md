@@ -1,4 +1,6 @@
-# A scoped, module based code loading for Ruby
+# Module Require
+
+## A scoped, module based code loading mechanism for Ruby
 
 This is an experimental project to ascertain the utility and practicality of an
 opt-in, scoped code loading mechanism.
